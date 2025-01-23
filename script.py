@@ -8,7 +8,7 @@ import time
 load_dotenv()
 
 # Initialize OpenAI client
-client = AsyncOpenAI(base_url="http://127.0.0.1:1234/v1", api_key="specifyanyway")
+client = AsyncOpenAI(base_url="http://10.1.101.230:1234/v1", api_key="specifyanyway")
 
 class Message(TypedDict):
     message: str
