@@ -1,0 +1,3 @@
+- Write strongly typed Python.
+- Heavily use Pythonic object-oriented programming.
+- Use write to file when modifying the whole file. This is to avoid large erroneous SEARCH blocks.
