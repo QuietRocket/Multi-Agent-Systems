@@ -62,6 +62,5 @@ while True:
         print("Bot:", assistant_response)
 
     except Exception as e:
-        raise e
         print(f"Error: {str(e)}")
         continue
