@@ -1,6 +1,5 @@
 from dotenv import load_dotenv
 from openai import OpenAI
-import asyncio
 import time
 from agent_base import AgentBase
 from environment import Environment
@@ -8,6 +7,7 @@ from environment import Environment
 load_dotenv()
 
 client = OpenAI(base_url="http://127.0.0.1:1234/v1", api_key="specifyanyway")
+
 
 class PasswordKeeper(AgentBase):
     def __init__(self, env):
@@ -35,7 +35,7 @@ class PasswordCracker(AgentBase):
         )
 
 
-async def main() -> None:
+def main() -> None:
     env = Environment(client=client)
 
     # Add to environment
@@ -45,11 +45,10 @@ async def main() -> None:
     # Run simulation
     for step in range(100):  # Run for 100 steps
         print(f"\n=== Step {step + 1} ===")
+
         messages = env.step(step + 1)
-        for message in messages:
-            print(f"{message['sender']}: {message['message']}")
-        time.sleep(2)
+        print(messages)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
