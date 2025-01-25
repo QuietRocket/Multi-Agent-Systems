@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel
 from typing import List, Dict, Union
+from os import environ
 
 
 class Message(BaseModel):
@@ -36,8 +37,10 @@ class PasswordGame:
 
 load_dotenv()
 
+ip = environ.get("ip")
+
 # Initialize OpenAI client
-client = OpenAI(base_url="http://192.168.1.97:1234/v1", api_key="specifyanyway")
+client = OpenAI(base_url=ip, api_key="specifyanyway")
 
 # Initialize message history
 history: List[Dict[str, str]] = []
