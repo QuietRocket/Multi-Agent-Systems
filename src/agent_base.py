@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING
+import json
+from typing import TYPE_CHECKING, Dict, Any
 from openai.types.chat import (
     ChatCompletionMessageParam,
     ChatCompletionAssistantMessageParam,
@@ -10,11 +11,28 @@ if TYPE_CHECKING:
     from environment import Environment
 
 class AgentBase:
-    def __init__(self, env: 'Environment', name: str, system_prompt: str):
+    _parameters: Dict[str, Any] = None
+
+    def __init__(self, env: 'Environment'):
         self.env = env
-        self.name = name
-        self.system_prompt = system_prompt
+        self.name = self.get_parameter("name")
+        self.system_prompt = AgentBase.parameters().get("prompt_ENV") + self.get_parameter("prompt")
         self.history: list[ChatCompletionMessageParam] = []
+
+    @classmethod
+    def _load_parameters(cls) -> None:
+        with open("parameters.json", "r") as file:
+            cls._parameters = json.load(file)
+
+    @classmethod
+    def parameters(cls) -> Dict[str, Any]:
+        if cls._parameters is None:
+            cls._load_parameters()
+        return cls._parameters
+
+    def get_parameter(self, property_name: str) -> Any:
+        prefixed_name = f"{self.__class__.__name__}_{property_name}"
+        return self.parameters().get(prefixed_name)
 
     def update_history(self, message: str):
         self.history.append(
