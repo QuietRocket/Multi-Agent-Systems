@@ -61,14 +61,12 @@ class AgentBase:
             *(self.history if include_history else []),
         ]
 
-    def messages_from_instruction(
+    def message_from_instruction(
         self, instruction: str
     ) -> ChatCompletionUserMessageParam:
         return ChatCompletionUserMessageParam(content=instruction, role="user")
 
-    def messages_from_partial(
-        self, partial: str
-    ) -> ChatCompletionAssistantMessageParam:
+    def message_from_partial(self, partial: str) -> ChatCompletionAssistantMessageParam:
         return ChatCompletionAssistantMessageParam(content=partial, role="assistant")
 
     def run(self) -> str:
@@ -76,9 +74,10 @@ class AgentBase:
             model=self.env.model_names["regular"],
             messages=[
                 *self.construct_messages_base(),
-                self.messages_from_instruction(
-                    f"Generate the next message for {self.name}"
+                self.message_from_instruction(
+                    f"You are {self.name}. What would you say next?"
                 ),
+                self.message_from_partial(f"{self.name}: "),
             ],
         )
 
