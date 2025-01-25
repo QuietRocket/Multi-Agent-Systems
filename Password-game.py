@@ -37,7 +37,7 @@ class PasswordGame:
 load_dotenv()
 
 # Initialize OpenAI client
-client = OpenAI(base_url="http://10.1.101.230:1234/v1", api_key="specifyanyway")
+client = OpenAI(base_url="http://192.168.1.97:1234/v1", api_key="specifyanyway")
 
 # Initialize message history
 history: List[Dict[str, str]] = []
