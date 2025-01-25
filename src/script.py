@@ -23,7 +23,7 @@ class PasswordKeeper(AgentBase):
         super().__init__(
             env=env,
             name=data["name_A"],
-            system_prompt=(data["prompt_A"])
+            system_prompt=data["prompt_ENV"] + data["prompt_A"]
         )
 
 
@@ -32,7 +32,7 @@ class PasswordCracker(AgentBase):
         super().__init__(
             env=env,
             name=data["name_B"],
-            system_prompt=(data["prompt_B"])
+            system_prompt=data["prompt_ENV"] + data["prompt_B"]
         )
 
 

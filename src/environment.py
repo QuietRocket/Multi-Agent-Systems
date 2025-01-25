@@ -26,6 +26,6 @@ class Environment:
         result = agent.run()
 
         for agent in self.agents.values():
-            agent.update_history(result)
+            agent.update_history(f"{agent.name}: {result}")
 
         return result
