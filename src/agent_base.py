@@ -10,11 +10,12 @@ if TYPE_CHECKING:
     from environment import Environment
 
 class AgentBase:
-    def __init__(self, env: 'Environment', name: str, system_prompt: str):
+    def __init__(self, env: 'Environment', name: str, system_prompt: str, model: str):
         self.env = env
         self.name = name
         self.system_prompt = system_prompt
         self.history: list[ChatCompletionMessageParam] = []
+        self.model = model
 
     def update_history(self, message: str):
         self.history.append(
@@ -23,7 +24,7 @@ class AgentBase:
 
     def run(self) -> str:
         result = self.env.client.chat.completions.create(
-            model="llama-3.2-3b-instruct",
+            model=self.model,
             messages=[
                 ChatCompletionSystemMessageParam(
                     content=self.system_prompt, role="system"
