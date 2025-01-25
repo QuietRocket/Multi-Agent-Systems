@@ -10,13 +10,16 @@ from openai.types.chat import (
 if TYPE_CHECKING:
     from environment import Environment
 
+
 class AgentBase:
     _parameters: Dict[str, Any] = None
 
-    def __init__(self, env: 'Environment'):
+    def __init__(self, env: "Environment"):
         self.env = env
         self.name = self.get_parameter("name")
-        self.system_prompt = AgentBase.parameters().get("prompt_ENV") + self.get_parameter("prompt")
+        self.system_prompt = AgentBase.parameters().get(
+            "common_prompt"
+        ) + self.get_parameter("prompt")
         self.history: list[ChatCompletionMessageParam] = []
 
     @classmethod
@@ -40,21 +43,32 @@ class AgentBase:
         )
 
     def construct_messages_base(
-            self,
-            include_system_prompt: bool = True,
-            include_history: bool=True,
-        ) -> list[ChatCompletionMessageParam]:
-            return [
-                 *([ChatCompletionSystemMessageParam(
-                    content=self.system_prompt, role="system",
-                )] if include_system_prompt else []),
-                 *(self.history if include_history else []),
-            ]
-    
-    def messages_from_instruction(self, instruction: str) -> ChatCompletionUserMessageParam:
+        self,
+        include_system_prompt: bool = True,
+        include_history: bool = True,
+    ) -> list[ChatCompletionMessageParam]:
+        return [
+            *(
+                [
+                    ChatCompletionSystemMessageParam(
+                        content=self.system_prompt,
+                        role="system",
+                    )
+                ]
+                if include_system_prompt
+                else []
+            ),
+            *(self.history if include_history else []),
+        ]
+
+    def messages_from_instruction(
+        self, instruction: str
+    ) -> ChatCompletionUserMessageParam:
         return ChatCompletionUserMessageParam(content=instruction, role="user")
-    
-    def messages_from_partial(self, partial: str) -> ChatCompletionAssistantMessageParam:
+
+    def messages_from_partial(
+        self, partial: str
+    ) -> ChatCompletionAssistantMessageParam:
         return ChatCompletionAssistantMessageParam(content=partial, role="assistant")
 
     def run(self) -> str:
@@ -62,7 +76,9 @@ class AgentBase:
             model=self.env.model_names["regular"],
             messages=[
                 *self.construct_messages_base(),
-                self.messages_from_instruction(f"Generate the next message for {self.name}"),
+                self.messages_from_instruction(
+                    f"Generate the next message for {self.name}"
+                ),
             ],
         )
 

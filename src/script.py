@@ -3,7 +3,6 @@ from openai import OpenAI
 from agent_base import AgentBase
 from environment import Environment, ModelTypes
 from os import environ
-import json
 
 load_dotenv()
 
@@ -12,6 +11,7 @@ REGULAR_MODEL = environ.get("REGULAR_MODEL")
 REASONING_MODEL = environ.get("REASONING_MODEL")
 
 client = OpenAI(base_url=URL, api_key="specifyanyway")
+
 
 class PasswordKeeper(AgentBase):
     def __init__(self, env):
