@@ -79,6 +79,7 @@ class AgentBase:
                 ),
                 self.message_from_partial(f"{self.name}: "),
             ],
+            stop="\n"
         )
 
         return result.choices[0].message.content
