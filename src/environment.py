@@ -21,7 +21,10 @@ class Environment:
 
     def add_agent(self, agent_class: Type["AgentBase"], *args, **kwargs):
         agent = agent_class(*args, **{"env": self, **kwargs})
-        self.agents[agent.name] = agent
+        self.agents[agent.__class__.__name__] = agent
+
+    def get_agent(self, agent_name: str) -> "AgentBase":
+        return self.agents.get(agent_name)
 
     def step(self, step_number: int) -> str:
         current_agent = list(self.agents.values())[step_number % len(self.agents)]

@@ -22,6 +22,15 @@ class AgentBase:
         ) + self.get_parameter("prompt")
         self.history: list[ChatCompletionMessageParam] = []
 
+    def get_system_prompt(self) -> str:
+        return self.system_prompt
+
+    @classmethod
+    def create_password(cls) -> str:
+        if cls._password is None:
+            cls._password = "ILoveCats163"
+        return cls._password
+
     @classmethod
     def _load_parameters(cls) -> None:
         with open("parameters.json", "r") as file:
@@ -51,7 +60,7 @@ class AgentBase:
             *(
                 [
                     ChatCompletionSystemMessageParam(
-                        content=self.system_prompt,
+                        content=self.get_system_prompt(),
                         role="system",
                     )
                 ]
@@ -83,3 +92,4 @@ class AgentBase:
         )
 
         return result.choices[0].message.content
+    
