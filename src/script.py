@@ -2,7 +2,8 @@ from dotenv import load_dotenv
 from openai import OpenAI
 import asyncio
 import time
-from . import AgentBase, Environment
+from agent_base import AgentBase
+from environment import Environment
 
 load_dotenv()
 

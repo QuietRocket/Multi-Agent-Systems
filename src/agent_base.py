@@ -1,13 +1,16 @@
+from typing import TYPE_CHECKING
 from openai.types.chat import (
     ChatCompletionMessageParam,
     ChatCompletionAssistantMessageParam,
     ChatCompletionUserMessageParam,
     ChatCompletionSystemMessageParam,
 )
-from .environment import Environment
+
+if TYPE_CHECKING:
+    from environment import Environment
 
 class AgentBase:
-    def __init__(self, env: Environment, name: str, system_prompt: str):
+    def __init__(self, env: 'Environment', name: str, system_prompt: str):
         self.env = env
         self.name = name
         self.system_prompt = system_prompt

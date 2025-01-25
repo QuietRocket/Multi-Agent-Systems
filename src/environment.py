@@ -1,6 +1,8 @@
-from typing import Type
+from typing import Type, TYPE_CHECKING
 from openai import OpenAI
-from . import AgentBase
+
+if TYPE_CHECKING:
+    from agent_base import AgentBase
 
 class Environment:
     client: OpenAI
@@ -9,7 +11,7 @@ class Environment:
         self.client = client
         self.agents: dict[str, AgentBase] = {}
 
-    def add_agent(self, agent_class: Type[AgentBase], *args, **kwargs):
+    def add_agent(self, agent_class: Type['AgentBase'], *args, **kwargs):
         agent = agent_class(*args, **{"env": self, **kwargs})
         self.agents[agent.name] = agent
 
