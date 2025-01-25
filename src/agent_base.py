@@ -26,12 +26,6 @@ class AgentBase:
         return self.system_prompt
 
     @classmethod
-    def create_password(cls) -> str:
-        if cls._password is None:
-            cls._password = "ILoveCats163"
-        return cls._password
-
-    @classmethod
     def _load_parameters(cls) -> None:
         with open("parameters.json", "r") as file:
             cls._parameters = json.load(file)
