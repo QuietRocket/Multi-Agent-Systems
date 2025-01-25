@@ -1,8 +1,7 @@
 from dotenv import load_dotenv
 from openai import OpenAI
-import time
 from agent_base import AgentBase
-from environment import Environment
+from environment import Environment, ModelTypes
 from os import environ
 import json
 
@@ -22,7 +21,6 @@ with open('prompts.json', 'r') as file:
 class PasswordKeeper(AgentBase):
     def __init__(self, env):
         super().__init__(
-            model=REGULAR_MODEL,
             env=env,
             name=data["name_A"],
             system_prompt=(data["prompt_A"])
@@ -32,7 +30,6 @@ class PasswordKeeper(AgentBase):
 class PasswordCracker(AgentBase):
     def __init__(self, env):
         super().__init__(
-            model=REGULAR_MODEL,
             env=env,
             name=data["name_B"],
             system_prompt=(data["prompt_B"])
@@ -40,7 +37,7 @@ class PasswordCracker(AgentBase):
 
 
 def main() -> None:
-    env = Environment(client=client)
+    env = Environment(client=client, model_names=ModelTypes(regular=REGULAR_MODEL, reasoning=REASONING_MODEL))
 
     # Add to environment
     env.add_agent(PasswordKeeper)
