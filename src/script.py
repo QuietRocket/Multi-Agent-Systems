@@ -111,23 +111,32 @@ def main() -> None:
     layout["left"].update(chat_history_panel)
     layout["right"].update(output_panel)
 
+    steps_taken = 0
+
     with Live(console=console, screen=True, redirect_stderr=False) as live:
         live.console.log("Starting simulation...")
         live.update(layout)
 
-        # Run simulation
-        for step in range(20):  # Run for 20 steps
+        for step in range(100):
+            steps_taken = step
             live.console.log(f"\n=== Step {step + 1} ===")
             if not env.step(step + 1):
                 live.console.log(
                     f"\n=== Simulation terminated after {step + 1} steps ==="
                 )
                 break
-            chat_history_panel.renderable = "\n".join(env.history_log)
+            chat_history_panel.renderable = "\n".join(env.history_log[::-1])
             layout["footer"].update(
-                Panel(f"Current step: {step + 1}", border_style="blue")
-            )  # Update footer
+                Panel(f"The password is {PasswordKeeper.password}. Current step: {step + 1}", border_style="blue")
+            )
             live.update(layout)
+
+    console.print("\nChat history:")
+
+    for log in env.history_log:
+        console.print(log)
+
+    console.print(f"\n=== Simulation terminated after {steps_taken + 1} steps ===")
 
 
 if __name__ == "__main__":
