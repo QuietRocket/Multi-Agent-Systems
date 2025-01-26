@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 from openai import OpenAI
-from agent_base import AgentBase
+from simple_agent import SimpleAgent
 from reasoning_agent import ReasoningAgent
 from environment import Environment, ModelTypes
 from os import environ
@@ -14,7 +14,7 @@ REASONING_MODEL = environ.get("REASONING_MODEL")
 client = OpenAI(base_url=URL, api_key="specifyanyway")
 
 
-class PasswordKeeper(AgentBase):
+class PasswordKeeper(SimpleAgent):
     def __init__(self, env):
         super().__init__(env=env)
 
