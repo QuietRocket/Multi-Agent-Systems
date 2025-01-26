@@ -70,5 +70,5 @@ class AgentBase:
     def message_from_partial(self, partial: str) -> ChatCompletionAssistantMessageParam:
         return ChatCompletionAssistantMessageParam(content=partial, role="assistant")
 
-    def run(self, _: Panel) -> str:
+    def run(self) -> str:
         raise NotImplementedError

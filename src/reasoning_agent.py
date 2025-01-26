@@ -7,7 +7,7 @@ class ReasoningAgent(AgentBase):
         super().__init__(env)
         self.max_reasoning_tokens = max_reasoning_tokens
 
-    def run(self, output_panel: Panel):
+    def run(self):
         reasoning_stream = self.env.client.chat.completions.create(
             model=self.env.model_names["reasoning"],
             messages=[
@@ -23,7 +23,7 @@ class ReasoningAgent(AgentBase):
         for chunk in reasoning_stream:
             if chunk.choices[0].delta.content is not None:
                 reasoning += chunk.choices[0].delta.content
-                output_panel.renderable = (
+                self.env.output_panel.renderable = (
                     "[bold blue]Reasoning:[/bold blue]\n" + reasoning
                 )
 
@@ -49,7 +49,7 @@ class ReasoningAgent(AgentBase):
         for chunk in result_stream:
             if chunk.choices[0].delta.content is not None:
                 full_response += chunk.choices[0].delta.content
-                output_panel.renderable = (
+                self.env.output_panel.renderable = (
                     "[bold magenta]Response:[/bold magenta]\n" + full_response
                 )
         return full_response

@@ -6,7 +6,7 @@ class SimpleAgent(AgentBase):
     def __init__(self, env):
         super().__init__(env)
 
-    def run(self, output_panel: Panel):
+    def run(self):
         stream = self.env.client.chat.completions.create(
             model=self.env.model_names["regular"],
             messages=[
@@ -24,5 +24,5 @@ class SimpleAgent(AgentBase):
         for chunk in stream:
             if chunk.choices[0].delta.content is not None:
                 full_response += chunk.choices[0].delta.content
-                output_panel.renderable = full_response
+                self.env.output_panel.renderable = full_response
         return full_response

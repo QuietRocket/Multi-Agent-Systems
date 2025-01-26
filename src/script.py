@@ -60,6 +60,7 @@ def main() -> None:
     layout["right"].update(output_panel)
 
     env = Environment(
+        output_panel=output_panel,
         client=client,
         model_names=ModelTypes(regular=REGULAR_MODEL, reasoning=REASONING_MODEL),
     )
@@ -67,9 +68,6 @@ def main() -> None:
     # Add to environment
     env.add_agent(PasswordKeeper)
     env.add_agent(PasswordStealer)
-
-    chat_history_panel = Panel("", title="History", border_style="green")
-    output_panel = Panel("", title="Output", border_style="magenta")
 
     layout = generate_layout()
     layout["left"].update(chat_history_panel)
@@ -82,7 +80,7 @@ def main() -> None:
         # Run simulation
         for step in range(20):  # Run for 20 steps
             live.console.log(f"\n=== Step {step + 1} ===")
-            _ = env.step(step + 1, output_panel=output_panel)
+            _ = env.step(step + 1)
             chat_history_panel.renderable = "\n".join(
                 env.history_log
             )  # Update chat history panel

@@ -15,20 +15,22 @@ class Environment:
     client: OpenAI
     model_names: ModelTypes
     history_log: list[str]
+    output_panel: Panel
 
-    def __init__(self, client: OpenAI, model_names: tuple[str, str]):
+    def __init__(self, client: OpenAI, model_names: tuple[str, str], output_panel: Panel):
         self.client = client
         self.agents: dict[str, AgentBase] = {}
         self.model_names = model_names
         self.history_log = []
+        self.output_panel = output_panel
 
     def add_agent(self, agent_class: Type["AgentBase"], *args, **kwargs):
         agent = agent_class(*args, **{"env": self, **kwargs})
         self.agents[agent.name] = agent
 
-    def step(self, step_number: int, output_panel: Panel) -> str:
+    def step(self, step_number: int) -> str:
         current_agent = list(self.agents.values())[step_number % len(self.agents)]
-        result = current_agent.run(output_panel=output_panel)
+        result = current_agent.run()
         formatted_result = f"{current_agent.name}: {result}"
 
         self.history_log.append(formatted_result)
