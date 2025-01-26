@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 from openai import OpenAI
-from agent_base import AgentBase
+from simple_agent import SimpleAgent
+from reasoning_agent import ReasoningAgent
 from environment import Environment, ModelTypes
 from os import environ
 
@@ -13,14 +14,14 @@ REASONING_MODEL = environ.get("REASONING_MODEL")
 client = OpenAI(base_url=URL, api_key="specifyanyway")
 
 
-class PasswordKeeper(AgentBase):
+class PasswordKeeper(SimpleAgent):
     def __init__(self, env):
         super().__init__(env=env)
 
 
-class PasswordStealer(AgentBase):
+class PasswordStealer(ReasoningAgent):
     def __init__(self, env):
-        super().__init__(env=env)
+        super().__init__(env=env, max_reasoning_tokens=200)
 
 
 def main() -> None:
@@ -34,7 +35,7 @@ def main() -> None:
     env.add_agent(PasswordStealer)
 
     # Run simulation
-    for step in range(100):  # Run for 100 steps
+    for step in range(20):  # Run for 20 steps
         print(f"\n=== Step {step + 1} ===")
         messages = env.step(step + 1)
         print(messages)
