@@ -6,6 +6,7 @@ from openai.types.chat import (
     ChatCompletionUserMessageParam,
     ChatCompletionSystemMessageParam,
 )
+from rich.panel import Panel
 
 if TYPE_CHECKING:
     from environment import Environment

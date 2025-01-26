@@ -1,5 +1,6 @@
 from typing import Type, TypedDict, TYPE_CHECKING
 from openai import OpenAI
+from rich.panel import Panel
 
 if TYPE_CHECKING:
     from agent_base import AgentBase
@@ -13,11 +14,18 @@ class ModelTypes(TypedDict):
 class Environment:
     client: OpenAI
     model_names: ModelTypes
+    history_log: list[str]
+    output_panel: Panel
 
-    def __init__(self, client: OpenAI, model_names: tuple[str, str]):
+    def __init__(self, client: OpenAI, model_names: tuple[str, str], output_panel: Panel):
         self.client = client
         self.agents: dict[str, AgentBase] = {}
         self.model_names = model_names
+        self.history_log = []
+        self.output_panel = output_panel
+
+    def write_to_output_panel(self, content: str):
+        self.output_panel.renderable = content
 
     def add_agent(self, agent_class: Type["AgentBase"], *args, **kwargs):
         agent = agent_class(*args, **{"env": self, **kwargs})
@@ -28,6 +36,9 @@ class Environment:
         result = current_agent.run()
         formatted_result = f"{current_agent.name}: {result}"
 
+        self.history_log.append(formatted_result)
+
+        # Broadcast the result to all agents
         for agent in self.agents.values():
             agent.update_history(formatted_result)
 
