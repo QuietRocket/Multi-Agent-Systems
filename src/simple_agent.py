@@ -1,11 +1,12 @@
 from agent_base import AgentBase
+from rich.panel import Panel
 
 
 class SimpleAgent(AgentBase):
     def __init__(self, env):
         super().__init__(env)
 
-    def run(self, output_panel):
+    def run(self, output_panel: Panel):
         stream = self.env.client.chat.completions.create(
             model=self.env.model_names["regular"],
             messages=[

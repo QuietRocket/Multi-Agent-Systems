@@ -1,4 +1,5 @@
 from agent_base import AgentBase
+from rich.panel import Panel
 
 
 class ReasoningAgent(AgentBase):
@@ -6,7 +7,7 @@ class ReasoningAgent(AgentBase):
         super().__init__(env)
         self.max_reasoning_tokens = max_reasoning_tokens
 
-    def run(self, output_panel):
+    def run(self, output_panel: Panel):
         reasoning_stream = self.env.client.chat.completions.create(
             model=self.env.model_names["reasoning"],
             messages=[

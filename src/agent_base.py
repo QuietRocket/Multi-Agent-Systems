@@ -6,6 +6,7 @@ from openai.types.chat import (
     ChatCompletionUserMessageParam,
     ChatCompletionSystemMessageParam,
 )
+from rich.panel import Panel
 
 if TYPE_CHECKING:
     from environment import Environment
@@ -69,5 +70,5 @@ class AgentBase:
     def message_from_partial(self, partial: str) -> ChatCompletionAssistantMessageParam:
         return ChatCompletionAssistantMessageParam(content=partial, role="assistant")
 
-    def run(self) -> str:
+    def run(self, _: Panel) -> str:
         raise NotImplementedError
