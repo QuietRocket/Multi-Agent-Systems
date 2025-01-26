@@ -16,13 +16,17 @@ class Environment:
     model_names: ModelTypes
     history_log: list[str]
     output_panel: Panel
+    is_terminated: bool
 
-    def __init__(self, client: OpenAI, model_names: tuple[str, str], output_panel: Panel):
+    def __init__(
+        self, client: OpenAI, model_names: tuple[str, str], output_panel: Panel
+    ):
         self.client = client
         self.agents: dict[str, AgentBase] = {}
         self.model_names = model_names
         self.history_log = []
         self.output_panel = output_panel
+        self.is_terminated = False
 
     def write_to_output_panel(self, content: str):
         self.output_panel.renderable = content
@@ -31,7 +35,10 @@ class Environment:
         agent = agent_class(*args, **{"env": self, **kwargs})
         self.agents[agent.name] = agent
 
-    def step(self, step_number: int) -> str:
+    def step(self, step_number: int) -> str | bool:
+        if self.is_terminated:
+            return False
+
         current_agent = list(self.agents.values())[step_number % len(self.agents)]
         result = current_agent.run()
         formatted_result = f"{current_agent.name}: {result}"
@@ -43,3 +50,6 @@ class Environment:
             agent.update_history(formatted_result)
 
         return formatted_result
+
+    def signal_termination(self):
+        self.is_terminated = True

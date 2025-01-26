@@ -1,9 +1,11 @@
 from dotenv import load_dotenv
 from openai import OpenAI
+from agent_base import AgentBase
 from simple_agent import SimpleAgent
 from reasoning_agent import ReasoningAgent
 from environment import Environment, ModelTypes
 from os import environ
+from random import randint
 
 from rich.console import Console
 from rich.layout import Layout
@@ -22,13 +24,49 @@ console = Console()
 
 
 class PasswordKeeper(SimpleAgent):
+    password = None
+
     def __init__(self, env):
         super().__init__(env=env)
+        random_seed = randint(1000000, 9999999)
+
+        # Generate password using LLM
+        password_response = self.env.client.chat.completions.create(
+            model=self.env.model_names["regular"],
+            messages=[
+                self.message_from_instruction(
+                    f"The password seed is {random_seed}. Please generate a password."
+                    "Allowed: Words, adjectives, etc."
+                    "Make sure it is easy to remember."
+                ),
+                self.message_from_partial("The generated password is: "),
+            ],
+            stop="\n",
+            max_tokens=10,
+        )
+
+        password = password_response.choices[0].message.content
+        password = "".join(char for char in password if char.isalnum())
+
+        PasswordKeeper.password = password
+
+        self.system_prompt = AgentBase.parameters().get(
+            "common_prompt"
+        ) + self.get_parameter("prompt").replace("{PASSWORD}", password)
 
 
 class PasswordStealer(ReasoningAgent):
     def __init__(self, env):
         super().__init__(env=env, max_reasoning_tokens=200)
+
+    def run(self):
+        full_response = super().run()
+
+        if PasswordKeeper.password in full_response:
+            self.env.output_panel.renderable = "Password stolen!"
+            self.env.signal_termination()
+
+        return full_response
 
 
 def generate_layout() -> Layout:
@@ -73,21 +111,32 @@ def main() -> None:
     layout["left"].update(chat_history_panel)
     layout["right"].update(output_panel)
 
+    steps_taken = 0
+
     with Live(console=console, screen=True, redirect_stderr=False) as live:
         live.console.log("Starting simulation...")
         live.update(layout)
 
-        # Run simulation
-        for step in range(20):  # Run for 20 steps
+        for step in range(100):
+            steps_taken = step
             live.console.log(f"\n=== Step {step + 1} ===")
-            _ = env.step(step + 1)
-            chat_history_panel.renderable = "\n".join(
-                env.history_log
-            )  # Update chat history panel
+            if not env.step(step + 1):
+                live.console.log(
+                    f"\n=== Simulation terminated after {step + 1} steps ==="
+                )
+                break
+            chat_history_panel.renderable = "\n".join(env.history_log[::-1])
             layout["footer"].update(
-                Panel(f"Current step: {step + 1}", border_style="blue")
-            )  # Update footer
+                Panel(f"The password is {PasswordKeeper.password}. Current step: {step + 1}", border_style="blue")
+            )
             live.update(layout)
+
+    console.print("\nChat history:")
+
+    for log in env.history_log:
+        console.print(log)
+
+    console.print(f"\n=== Simulation terminated after {steps_taken + 1} steps ===")
 
 
 if __name__ == "__main__":
