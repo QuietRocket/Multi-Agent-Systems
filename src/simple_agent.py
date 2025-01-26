@@ -1,5 +1,4 @@
 from agent_base import AgentBase
-from rich.panel import Panel
 
 
 class SimpleAgent(AgentBase):
@@ -24,5 +23,5 @@ class SimpleAgent(AgentBase):
         for chunk in stream:
             if chunk.choices[0].delta.content is not None:
                 full_response += chunk.choices[0].delta.content
-                self.env.output_panel.renderable = full_response
+                self.env.write_to_output_panel(full_response)
         return full_response

@@ -24,6 +24,9 @@ class Environment:
         self.history_log = []
         self.output_panel = output_panel
 
+    def write_to_output_panel(self, content: str):
+        self.output_panel.renderable = content
+
     def add_agent(self, agent_class: Type["AgentBase"], *args, **kwargs):
         agent = agent_class(*args, **{"env": self, **kwargs})
         self.agents[agent.name] = agent

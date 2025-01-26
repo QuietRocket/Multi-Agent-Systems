@@ -1,5 +1,4 @@
 from agent_base import AgentBase
-from rich.panel import Panel
 
 
 class ReasoningAgent(AgentBase):
@@ -23,7 +22,7 @@ class ReasoningAgent(AgentBase):
         for chunk in reasoning_stream:
             if chunk.choices[0].delta.content is not None:
                 reasoning += chunk.choices[0].delta.content
-                self.env.output_panel.renderable = (
+                self.env.write_to_output_panel(
                     "[bold blue]Reasoning:[/bold blue]\n" + reasoning
                 )
 
@@ -49,7 +48,7 @@ class ReasoningAgent(AgentBase):
         for chunk in result_stream:
             if chunk.choices[0].delta.content is not None:
                 full_response += chunk.choices[0].delta.content
-                self.env.output_panel.renderable = (
+                self.env.write_to_output_panel(
                     "[bold magenta]Response:[/bold magenta]\n" + full_response
                 )
         return full_response
