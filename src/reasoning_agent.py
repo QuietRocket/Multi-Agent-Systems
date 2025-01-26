@@ -6,8 +6,8 @@ class ReasoningAgent(AgentBase):
         super().__init__(env)
         self.max_reasoning_tokens = max_reasoning_tokens
 
-    def run(self):
-        reasoning_result = self.env.client.chat.completions.create(
+    def run(self, output_panel):
+        reasoning_stream = self.env.client.chat.completions.create(
             model=self.env.model_names["reasoning"],
             messages=[
                 *self.construct_messages_base(),
@@ -16,13 +16,19 @@ class ReasoningAgent(AgentBase):
                 ),
             ],
             max_tokens=self.max_reasoning_tokens,
+            stream=True,
         )
-        reasoning = reasoning_result.choices[0].message.content
+        reasoning = ""
+        for chunk in reasoning_stream:
+            if chunk.choices[0].delta.content is not None:
+                reasoning += chunk.choices[0].delta.content
+                output_panel.renderable = (
+                    "[bold blue]Reasoning:[/bold blue]\n" + reasoning
+                )
+
         reasoning = reasoning.replace("<think>", "").replace("</think>", "")
 
-        print(reasoning + "\n======\n")
-
-        result = self.env.client.chat.completions.create(
+        result_stream = self.env.client.chat.completions.create(
             model=self.env.model_names["regular"],
             messages=[
                 *self.construct_messages_base(),
@@ -35,6 +41,14 @@ class ReasoningAgent(AgentBase):
                 ),
             ],
             stop="\n",
+            stream=True,
         )
 
-        return result.choices[0].message.content
+        full_response = ""
+        for chunk in result_stream:
+            if chunk.choices[0].delta.content is not None:
+                full_response += chunk.choices[0].delta.content
+                output_panel.renderable = (
+                    "[bold magenta]Response:[/bold magenta]\n" + full_response
+                )
+        return full_response
